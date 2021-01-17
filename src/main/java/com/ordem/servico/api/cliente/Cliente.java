@@ -18,7 +18,6 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Cliente {
 
-
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)

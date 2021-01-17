@@ -2,6 +2,9 @@ package com.ordem.servico.api.ordemservico;
 
 import com.ordem.servico.api.cliente.Cliente;
 import com.ordem.servico.api.cliente.ClienteRepository;
+import com.ordem.servico.api.comentario.Comentario;
+import com.ordem.servico.api.comentario.ComentarioRepository;
+import com.ordem.servico.api.exception.EntidadeNaoEncotradaException;
 import com.ordem.servico.api.exception.NegocioException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class OrdemServicoService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private ComentarioRepository comentarioRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -55,6 +61,17 @@ public class OrdemServicoService {
         ordemServico.setDataAbertura(OffsetDateTime.now());
         var salvaOrdem = toModel(ordemServicoRepository.save(ordemServico));
         return ResponseEntity.status(HttpStatus.CREATED).body(salvaOrdem);
+    }
+
+    public Comentario insereComentario(Long ordemServicoId, String descricao) {
+        OrdemServico ordemServico = ordemServicoRepository.findById(ordemServicoId)
+                .orElseThrow(() -> new EntidadeNaoEncotradaException("Ordem de serviço não encontrada"));
+        Comentario comentario = Comentario.builder()
+                .dataEnvio(OffsetDateTime.now())
+                .descricao(descricao)
+                .ordemServico(ordemServico)
+                .build();
+        return comentarioRepository.save(comentario);
     }
 
     protected OrdemServico toEntity(OrdemServicoInput ordemServicoInput) {

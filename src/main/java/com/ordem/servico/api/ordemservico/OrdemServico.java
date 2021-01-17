@@ -1,6 +1,7 @@
 package com.ordem.servico.api.ordemservico;
 
 import com.ordem.servico.api.cliente.Cliente;
+import com.ordem.servico.api.comentario.Comentario;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,10 +13,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -42,5 +46,8 @@ public class OrdemServico {
     private OffsetDateTime dataAbertura;
 
     private LocalDateTime dataFinalizacao;
+
+    @OneToMany(mappedBy = "ordemServico")
+    private List<Comentario> comentarios = new ArrayList<>();
 
 }
