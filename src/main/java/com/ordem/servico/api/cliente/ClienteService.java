@@ -1,5 +1,6 @@
 package com.ordem.servico.api.cliente;
 
+import com.ordem.servico.api.exception.NegocioException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,9 @@ public class ClienteService {
     }
 
     public ResponseEntity<Cliente> insere(@Valid Cliente cliente) {
-        if (nonNull(cliente.getId())) {
+        Cliente clienteExistente = clienteRepository.findByEmail(cliente.getEmail());
+        if (nonNull(cliente.getId()) && nonNull(clienteExistente) && !clienteExistente.equals(cliente)) {
+            NegocioException.mensagem001();
             return ResponseEntity.badRequest().build();
         }
         Cliente clienteInsere = clienteRepository.save(cliente);

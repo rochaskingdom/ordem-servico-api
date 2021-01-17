@@ -1,4 +1,4 @@
-package com.ordem.servico.api.exception;
+package com.ordem.servico.api.exceptionhandler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
