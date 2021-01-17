@@ -64,14 +64,24 @@ public class OrdemServicoService {
     }
 
     public Comentario insereComentario(Long ordemServicoId, String descricao) {
-        OrdemServico ordemServico = ordemServicoRepository.findById(ordemServicoId)
-                .orElseThrow(() -> new EntidadeNaoEncotradaException("Ordem de serviço não encontrada"));
+        OrdemServico ordemServico = buscaOrdemPeloId(ordemServicoId);
         Comentario comentario = Comentario.builder()
                 .dataEnvio(OffsetDateTime.now())
                 .descricao(descricao)
                 .ordemServico(ordemServico)
                 .build();
         return comentarioRepository.save(comentario);
+    }
+
+    public void finalizaOrdem(Long ordemServicoId) {
+        OrdemServico ordemServico = buscaOrdemPeloId(ordemServicoId);
+        ordemServico.finalizar();
+        ordemServicoRepository.save(ordemServico);
+    }
+
+    private OrdemServico buscaOrdemPeloId(Long ordemServicoId) {
+        return ordemServicoRepository.findById(ordemServicoId)
+                .orElseThrow(() -> new EntidadeNaoEncotradaException("Ordem de serviço não encontrada"));
     }
 
     protected OrdemServico toEntity(OrdemServicoInput ordemServicoInput) {
