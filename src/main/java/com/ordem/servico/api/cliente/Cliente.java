@@ -1,6 +1,5 @@
 package com.ordem.servico.api.cliente;
 
-import com.ordem.servico.api.utils.ValidationGroups;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -24,7 +22,6 @@ public class Cliente {
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull(groups = ValidationGroups.ClienteId.class)
     private Long id;
 
     @NotBlank

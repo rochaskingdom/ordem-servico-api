@@ -1,5 +1,6 @@
 package com.ordem.servico.api.ordemservico;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,18 +20,23 @@ public class OrdemServicoController {
     @Autowired
     private OrdemServicoService ordemServicoService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping
-    public List<OrdemServico> lista() {
+    public List<OrdemServicoModel> lista() {
         return ordemServicoService.lista();
     }
 
     @GetMapping("/{ordemServicoId}")
-    public ResponseEntity<OrdemServico> buscaOrdem(@PathVariable Long ordemServicoId) {
+    public ResponseEntity<OrdemServicoModel> buscaOrdem(@PathVariable Long ordemServicoId) {
         return ordemServicoService.buscaOrdem(ordemServicoId);
     }
 
     @PostMapping
-    public ResponseEntity<OrdemServico> insere(@RequestBody @Valid OrdemServico ordemServico) {
+    public ResponseEntity<OrdemServicoModel> insere(@RequestBody @Valid OrdemServicoInput ordemServicoInput) {
+        OrdemServico ordemServico = ordemServicoService.toEntity(ordemServicoInput);
         return ordemServicoService.insere(ordemServico);
     }
+
 }

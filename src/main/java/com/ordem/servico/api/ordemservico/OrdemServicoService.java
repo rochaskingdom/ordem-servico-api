@@ -3,6 +3,7 @@ package com.ordem.servico.api.ordemservico;
 import com.ordem.servico.api.cliente.Cliente;
 import com.ordem.servico.api.cliente.ClienteRepository;
 import com.ordem.servico.api.exception.NegocioException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ordem.servico.api.ordemservico.StatusOrdemServico.ABERTA;
 import static java.util.Objects.isNull;
@@ -26,16 +28,23 @@ public class OrdemServicoService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public List<OrdemServico> lista() {
-        return ordemServicoRepository.findAll();
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public List<OrdemServicoModel> lista() {
+        return toCollectionModel(ordemServicoRepository.findAll());
     }
 
-    public ResponseEntity<OrdemServico> buscaOrdem(Long ordemServicoId) {
+    public ResponseEntity<OrdemServicoModel> buscaOrdem(Long ordemServicoId) {
         Optional<OrdemServico> ordemServico = ordemServicoRepository.findById(ordemServicoId);
-        return ordemServico.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (ordemServico.isPresent()) {
+            OrdemServicoModel ordemServicoModel = toModel(ordemServico.get());
+            return ResponseEntity.ok(ordemServicoModel);
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    public ResponseEntity<OrdemServico> insere(@Valid OrdemServico ordemServico) {
+    public ResponseEntity<OrdemServicoModel> insere(@Valid OrdemServico ordemServico) {
         if (nonNull(ordemServico.getId()) || isNull(ordemServico.getCliente().getId())) {
             return ResponseEntity.badRequest().build();
         }
@@ -44,7 +53,19 @@ public class OrdemServicoService {
         ordemServico.setCliente(cliente);
         ordemServico.setStatus(ABERTA);
         ordemServico.setDataAbertura(OffsetDateTime.now());
-        var salvaOrdem = ordemServicoRepository.save(ordemServico);
+        var salvaOrdem = toModel(ordemServicoRepository.save(ordemServico));
         return ResponseEntity.status(HttpStatus.CREATED).body(salvaOrdem);
+    }
+
+    protected OrdemServico toEntity(OrdemServicoInput ordemServicoInput) {
+        return modelMapper.map(ordemServicoInput, OrdemServico.class);
+    }
+
+    private OrdemServicoModel toModel(OrdemServico ordemServico) {
+        return modelMapper.map(ordemServico, OrdemServicoModel.class);
+    }
+
+    private List<OrdemServicoModel> toCollectionModel(List<OrdemServico> ordensServico) {
+        return ordensServico.stream().map(this::toModel).collect(Collectors.toList());
     }
 }
