@@ -8,7 +8,4 @@ public class NegocioException extends RuntimeException {
         super(message);
     }
 
-    public static String mensagem001() {
-        throw new NegocioException("Já existe um cliente cadastrado com este e-mail.");
-    }
 }

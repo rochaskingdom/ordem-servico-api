@@ -29,9 +29,10 @@ public class ClienteService {
 
     public ResponseEntity<Cliente> insere(@Valid Cliente cliente) {
         Cliente clienteExistente = clienteRepository.findByEmail(cliente.getEmail());
-        if (nonNull(cliente.getId()) && nonNull(clienteExistente) && !clienteExistente.equals(cliente)) {
-            NegocioException.mensagem001();
+        if (nonNull(cliente.getId())) {
             return ResponseEntity.badRequest().build();
+        } else if (nonNull(clienteExistente) && !clienteExistente.equals(cliente)) {
+            throw new NegocioException("Já existe um cliente cadastrado com este e-mail.");
         }
         Cliente clienteInsere = clienteRepository.save(cliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteInsere);
